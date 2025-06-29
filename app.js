@@ -4,13 +4,6 @@ import { Player } from "./classes/Player.js";
 import { MultipleChoiceRiddle } from "./classes/MultipleChoiceRiddle.js";
 import readline from "readline-sync";
 
-function measureTime(callback){
-  const start = Date.now();
-  callback();
-  const end = Date.now();
-  return {start,end};
-}
-
 console.log("Welcome to Riddle Game!");
 const name = readline.question("what is your name?");
 const p = new Player(name);
@@ -22,6 +15,13 @@ const riddles = allRiddlesData.map(r => {
     return new Riddle(r);
   }
 });
+
+function measureTime(callback){
+  const start = Date.now();
+  callback();
+  const end = Date.now();
+  return {start,end};
+}
 
 
 for (const riddle of riddles) {
