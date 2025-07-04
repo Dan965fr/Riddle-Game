@@ -1,20 +1,23 @@
 import readline from "readline-sync";
 
-export class Riddle{
-    constructor({id,name,taskDescription,correctAnswer}){
+export class Riddle {
+    constructor({ id, name, taskDescription, correctAnswer }) {
         this.id = id
         this.name = name
         this.taskDescription = taskDescription
         this.correctAnswer = correctAnswer
     }
-    ask(){
+
+    // 
+    ask() {
         console.log(`\nRiddle ${this.id}: ${this.name}`)
-        while(true){
+        let flag = true;
+        while (flag) {
             const answer = readline.question(`${this.taskDescription}`)
-            if(answer === this.correctAnswer){
+            if (answer === this.correctAnswer) {
                 console.log("Correct")
                 break;
-            }else{
+            } else {
                 console.log("Try again");
             }
         }
