@@ -27,4 +27,7 @@ function playGame() {
 // Creat
 function createRiddle() {
     const data = loadRiddles();
+    
+   
+
 }

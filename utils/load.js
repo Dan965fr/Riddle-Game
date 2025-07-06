@@ -1,13 +1,13 @@
-import fs from "fs"
+import {readFile,writeFile} from "fs/promises"
 
 const path = "lib/db.txt"
 
-export function loadRiddles() {
-    const raw = fs.readFileSync(path, "utf-8")
-    return JSON.parse(raw)
+export async function loadRiddles() {
+    const raw = await readFile(path, "utf-8");
+    return JSON.parse(raw);
 }
 
-export function saveRiddles(data) {
-    fs.writeFileSync(path, JSON.stringify(data, null, 2), "utf-8")
+export async function saveRiddles(data) {
+    await writeFile(path, JSON.stringify(data, null, 2), "utf-8");
 }
 
