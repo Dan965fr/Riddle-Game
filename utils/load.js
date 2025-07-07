@@ -1,6 +1,6 @@
 import {readFile,writeFile} from "fs/promises"
 
-const path = "../lib/db.txt"
+const path = "./lib/db.txt"
 
 export async function loadRiddles() {
     const raw = await readFile(path, "utf-8");
