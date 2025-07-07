@@ -1,6 +1,4 @@
 
-
-
 const BASE_URL = "http://localhost:3007/riddles";
 
 
