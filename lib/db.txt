@@ -16,5 +16,17 @@
     "name": "Hard Math",
     "taskDescription": "What is 52 * 8 =",
     "correctAnswer": "416"
+  },
+  {
+    "id": 4,
+    "name": "animal",
+    "taskDescription": "What animal makes meow?",
+    "correctAnswer": "cat",
+    "choices": [
+      "dog",
+      "cat",
+      "lion",
+      "bird"
+    ]
   }
 ]
