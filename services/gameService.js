@@ -2,11 +2,19 @@ import fs from "fs";
 import { Riddle } from "../classes/Riddle.js";
 import { Player } from "../classes/Player.js";
 import { MultipleChoiceRiddle } from "../classes/MultipleChoiceRiddle.js";
+import {
+  playGame,
+  createRiddle,
+  readRiddles,
+  updateRiddle,
+  deleteRiddle
+} from "./playerService.js";
+
 import { loadRiddles,saveRiddles } from "../utils/load.js";
 import readline from "readline-sync"
 
 
-export function mainMenu() {
+export async function mainMenu() {
     let flag = true
     while (flag) {
         console.log("\n What do you want to do?");
@@ -20,11 +28,11 @@ export function mainMenu() {
         const choice = readline.questionInt("Enter your choice: ");
 
         switch (choice) {
-            case 1: playGame(); break;
-            case 2: createRiddle(); break;
-            case 3: readRiddles(); break;
-            case 4: updateRiddle(); break;
-            case 5: deleteRiddle(); break;
+            case 1: await playGame(); break;
+            case 2: await createRiddle(); break;
+            case 3: await readRiddles(); break;
+            case 4: await updateRiddle(); break;
+            case 5: await deleteRiddle(); break;
             case 0: console.log(" Bye!"); flag = false; break;
             default: console.log(" Invalid choice.");
         }
