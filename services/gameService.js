@@ -1,16 +1,8 @@
-import fs from "fs";
-import { Riddle } from "../classes/Riddle.js";
-import { Player } from "../classes/Player.js";
-import { MultipleChoiceRiddle } from "../classes/MultipleChoiceRiddle.js";
-import {
-  playGame,
-  createRiddle,
-  readRiddles,
-  updateRiddle,
-  deleteRiddle
-} from "./playerService.js";
 
-import { loadRiddles,saveRiddles } from "../utils/load.js";
+import { playGame } from "./playerService.js";
+import { createRiddle, readRiddles, updateRiddlePrompt, deleteRiddlePrompt } from "./playerService.js";
+
+
 import readline from "readline-sync"
 
 
@@ -31,8 +23,8 @@ export async function mainMenu() {
             case 1: await playGame(); break;
             case 2: await createRiddle(); break;
             case 3: await readRiddles(); break;
-            case 4: await updateRiddle(); break;
-            case 5: await deleteRiddle(); break;
+            case 4: await updateRiddlePrompt(); break;
+            case 5: await deleteRiddlePrompt(); break;
             case 0: console.log(" Bye!"); flag = false; break;
             default: console.log(" Invalid choice.");
         }
