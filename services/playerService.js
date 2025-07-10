@@ -54,11 +54,16 @@ export async function createRiddle() {
     console.log(" Riddle added!");
 }
 
+
+
 export async function readRiddles() {
     const riddles = await getAllRiddles();
     console.log("\n All Riddles:");
     console.log(riddles);
 }
+
+
+
 
 export async function updateRiddlePrompt() {
     const id = readline.questionInt("ID to update: ");
@@ -76,6 +81,9 @@ export async function updateRiddlePrompt() {
     await updateRiddle(updatedRiddle);
     console.log(" Riddle updated!");
 }
+
+
+
 
 export async function deleteRiddlePrompt() {
     const id = readline.questionInt("ID to delete: ");
