@@ -4,6 +4,10 @@ import { Player } from "../classes/Player.js";
 import { Riddle } from "../classes/Riddle.js";
 import {measureTime} from "../utils/time.js";
 import { addRiddle, getAllRiddles, updateRiddle, deleteRiddle } from "./riddleService.js";
+import {getPlayerByName,addPlayer,updatePlayerTime,getAllPlayers} from "./playersService.js";
+  
+  
+  
 
 
 export async function playGame() {
@@ -17,6 +21,19 @@ export async function playGame() {
         const name = readline.question("what is your name?");
         const p = new Player(name);
 
+
+
+        const existingPlayer = await getPlayerByName(name);
+        if(existingPlayer && existingPlayer.lowesTime){
+            console.log(`Hi ${name} Your previous lowest time was ${existingPlayer.lowesTime} seconds`);
+
+        }else{
+            await addPlayer(name);
+            console.log(`Welcome ${name} You are now registered`);
+        }
+
+
+
         const riddles = riddlesData.map(r =>
             r.choices ? new MultipleChoiceRiddle(r) : new Riddle(r)
         );
@@ -25,8 +42,21 @@ export async function playGame() {
             const { start, end } = measureTime(() => riddle.ask());
             p.recordTime(start, end); 
         }
+
+        const totalTime = p.getTotalTime();
+
         p.showStats()
-  
+
+
+
+        const updateRes = await updatePlayerTime(name, totalTime);
+        if (updateRes.msg === "New record!") {
+            console.log(" New record! Time updated.");
+        } else {
+            console.log("No improvement in time.");
+        }
+
+
     
     }catch(error){
         console.log("error playing game:",error.message);
@@ -35,6 +65,8 @@ export async function playGame() {
 
     
 }
+
+
 
 
 export async function createRiddle() {
@@ -91,4 +123,21 @@ export async function deleteRiddlePrompt() {
     console.log(" Riddle deleted!");
 
 
+}
+
+
+
+
+
+
+export async function showLeaderboard() {
+  const players = await getAllPlayers();
+  const sorted = players
+    .filter(p => p.lowestTime)
+    .sort((a, b) => a.lowestTime - b.lowestTime);
+
+  console.log("\n Leaderboard:");
+  sorted.forEach((p, i) => {
+    console.log(`${i + 1}. ${p.name} - ${p.lowestTime} seconds`);
+  });
 }
