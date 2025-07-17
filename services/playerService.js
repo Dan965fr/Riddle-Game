@@ -4,7 +4,7 @@ import { Player } from "../classes/Player.js";
 import { Riddle } from "../classes/Riddle.js";
 import {measureTime} from "../utils/time.js";
 import { addRiddle, getAllRiddles, updateRiddle, deleteRiddle } from "./riddleService.js";
-import {getPlayerByName,addPlayer,updatePlayerTime,getAllPlayers,} from "./playersService.js";
+import {getPlayerByName,addPlayer,updatePlayerTime,getAllPlayers} from "./playersService.js";
   
   
   
@@ -62,6 +62,8 @@ export async function playGame() {
 }
 
 
+
+
 export async function createRiddle() {
     const name = readline.question("Riddle name: ");
     const taskDescription = readline.question("Question: ");
@@ -116,4 +118,21 @@ export async function deleteRiddlePrompt() {
     console.log(" Riddle deleted!");
 
 
+}
+
+
+
+
+
+
+export async function showLeaderboard() {
+  const players = await getAllPlayers();
+  const sorted = players
+    .filter(p => p.lowestTime)
+    .sort((a, b) => a.lowestTime - b.lowestTime);
+
+  console.log("\n Leaderboard:");
+  sorted.forEach((p, i) => {
+    console.log(`${i + 1}. ${p.name} - ${p.lowestTime} seconds`);
+  });
 }
