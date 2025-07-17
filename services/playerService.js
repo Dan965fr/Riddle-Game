@@ -21,6 +21,8 @@ export async function playGame() {
         const name = readline.question("what is your name?");
         const p = new Player(name);
 
+
+
         const existingPlayer = await getPlayerByName(name);
         if(existingPlayer && existingPlayer.lowesTime){
             console.log(`Hi ${name} Your previous lowest time was ${existingPlayer.lowesTime} seconds`);
@@ -29,6 +31,8 @@ export async function playGame() {
             await addPlayer(name);
             console.log(`Welcome ${name} You are now registered`);
         }
+
+
 
         const riddles = riddlesData.map(r =>
             r.choices ? new MultipleChoiceRiddle(r) : new Riddle(r)
@@ -40,13 +44,14 @@ export async function playGame() {
         }
 
         const totalTime = p.getTotalTime();
+
         p.showStats()
 
 
 
         const updateRes = await updatePlayerTime(name, totalTime);
         if (updateRes.msg === "New record!") {
-            console.log("🎉 New record! Time updated.");
+            console.log(" New record! Time updated.");
         } else {
             console.log("No improvement in time.");
         }

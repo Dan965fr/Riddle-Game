@@ -8,6 +8,12 @@ export class Player{
        const durationInSecond = (end - start) / 1000;
        this.times.push(durationInSecond) 
     }
+
+
+    getTotalTime(){
+        const total = this.times.reduce((sum,time) => sum + time,0);
+        return Number(total.toFixed(2));
+    }
     
     showStats(){
         const totalTime = this.times.reduce((sum,time) => sum + time , 0);
