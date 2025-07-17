@@ -9,7 +9,7 @@ import {getPlayerByName,addPlayer,updatePlayerTime,getAllPlayers} from "./player
   
   
 
-
+// play the game
 export async function playGame() {
     try{
         const response = await fetch("http://localhost:3007/riddles");
@@ -22,7 +22,7 @@ export async function playGame() {
         const p = new Player(name);
 
 
-
+        // check if player exsits
         const existingPlayer = await getPlayerByName(name);
         if(existingPlayer && existingPlayer.lowesTime){
             console.log(`Hi ${name} Your previous lowest time was ${existingPlayer.lowesTime} seconds`);
@@ -48,7 +48,7 @@ export async function playGame() {
         p.showStats()
 
 
-
+        // update player time
         const updateRes = await updatePlayerTime(name, totalTime);
         if (updateRes.msg === "New record!") {
             console.log(" New record! Time updated.");
