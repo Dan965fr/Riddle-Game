@@ -32,26 +32,14 @@ export async function addPlayer(playerObj) {
 
 // Update player's best time
 export async function updatePlayerTime(id, time) {
-  try {
-    console.log(" שולח עדכון זמן לשרת:", { id, time });
-
-    const res = await fetch(`${BASE_URL}/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({lowestTime: time })
-    });
-
-    console.log(" סטטוס תגובה מהשרת",res.status)
-    const data = await res.json();
-
-    if(!res.ok){
-      throw new Error(data.error || "faild to apdate")
-    }
-    console.log(" תגובה מהשרת:", data);
-
-    return data;
-  } catch (err) {
-    console.error(" שגיאה בביצוע fetch:", err);
-    throw err; 
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ best_time: time }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to update player time');
   }
+  return await res.json();
 }

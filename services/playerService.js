@@ -12,65 +12,67 @@ import {addPlayer,updatePlayerTime,getAllPlayers} from "./playersService.js";
 // play the game
 export async function playGame() {
   try {
+    debugger;
     const response = await fetch("http://localhost:3007/riddles");
     if (!response.ok) {
       console.log("failed to fetch riddles:", response.status);
       return;
     }
-    
+
     const riddlesData = await response.json();
-    const name = readline.question("what is your name?");
-    const p = new Player(name);
 
+    const nameInput = readline.question("What is your name? ");
 
-
-    const allPlayers = await getAllPlayers(); 
-    let existingPlayer = allPlayers.find(player => player.name  && player.name.toLowerCase() === name.toLowerCase());
-
-
+    const allPlayers = await getAllPlayers();
+    let existingPlayer = allPlayers.find(player => player.username && player.username.toLowerCase() === nameInput.toLowerCase());
 
     if (!existingPlayer) {
-      const existingPlayer = await addPlayer({ name} );
-      
-      console.log(`Welcome ${name}, you are now registered`);
-    } else if (existingPlayer.lowestTime != null) {
-      console.log(`Hi ${name}, Your previous lowest time was ${existingPlayer.lowestTime} seconds`);
-    } else {
-      console.log(`Hi ${name}, no previous record found`);
+      existingPlayer = await addPlayer({ username: nameInput });
+      console.log(`Welcome ${nameInput}, you are now registered!`);
     }
 
+    if (!existingPlayer || !existingPlayer.id) {
+      console.error("Missing player ID after creation!");
+      return;
+    }
 
+    const playerName = existingPlayer.username || nameInput;  // תקן את השם
+    const p = new Player(playerName);
+
+    if (existingPlayer.best_time != null) {
+      console.log(`Hi ${playerName}, Your previous best time was ${existingPlayer.best_time} seconds`);
+    } else {
+      console.log(`Hi ${playerName}, no previous record found`);
+    }
 
     const riddles = riddlesData.map(r =>
       r.choices ? new MultipleChoiceRiddle(r) : new Riddle(r)
     );
 
-
     for (const riddle of riddles) {
       const start = Date.now();
       riddle.ask();
       const end = Date.now();
-      p.recordTime(start,end)
+      p.recordTime(start, end);
     }
 
     const totalTime = p.getTotalTime();
-
     p.showStats();
 
-   
-    console.log("existingPlayer:", existingPlayer);
+    const playerId = existingPlayer.id;
 
+    const updateRes = await updatePlayerTime(playerId, totalTime);
 
-    const updateRes = await updatePlayerTime(existingPlayer.id, totalTime);
     if (updateRes.msg === "New record!") {
       console.log("New record! Time updated.");
     } else {
       console.log("No improvement in time.");
     }
   } catch (error) {
-    console.log("error playing game:", error);
+    console.log("Error in playGame:", error);
   }
 }
+
 
 
 
@@ -140,7 +142,7 @@ export async function deleteRiddlePrompt() {
 export async function showLeaderboard() {
   const players = await getAllPlayers();
   const sorted = players
-    .filter(p => p.lowestTime)
+    .filter(p => typeof p.lowestTime === 'number')
     .sort((a, b) => a.lowestTime - b.lowestTime);
 
   console.log("\n Leaderboard:");
