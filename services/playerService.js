@@ -4,67 +4,76 @@ import { Player } from "../classes/Player.js";
 import { Riddle } from "../classes/Riddle.js";
 import {measureTime} from "../utils/time.js";
 import { addRiddle, getAllRiddles, updateRiddle, deleteRiddle } from "./riddleService.js";
-import {getPlayerByName,addPlayer,updatePlayerTime,getAllPlayers} from "./playersService.js";
+import {addPlayer,updatePlayerTime,getAllPlayers} from "./playersService.js";
   
   
   
 
-
+// play the game
 export async function playGame() {
-    try{
-        const response = await fetch("http://localhost:3007/riddles");
-        if(!response.ok){
-            console.log("faild to fetch riddles:",response.status)
-            return;
-        }
-        const riddlesData = await response.json();
-        const name = readline.question("what is your name?");
-        const p = new Player(name);
-
-
-
-        const existingPlayer = await getPlayerByName(name);
-        if(existingPlayer && existingPlayer.lowesTime){
-            console.log(`Hi ${name} Your previous lowest time was ${existingPlayer.lowesTime} seconds`);
-
-        }else{
-            await addPlayer(name);
-            console.log(`Welcome ${name} You are now registered`);
-        }
-
-
-
-        const riddles = riddlesData.map(r =>
-            r.choices ? new MultipleChoiceRiddle(r) : new Riddle(r)
-        );
-
-        for (const riddle of riddles) {
-            const { start, end } = measureTime(() => riddle.ask());
-            p.recordTime(start, end); 
-        }
-
-        const totalTime = p.getTotalTime();
-
-        p.showStats()
-
-
-
-        const updateRes = await updatePlayerTime(name, totalTime);
-        if (updateRes.msg === "New record!") {
-            console.log(" New record! Time updated.");
-        } else {
-            console.log("No improvement in time.");
-        }
-
-
-    
-    }catch(error){
-        console.log("error playing game:",error.message);
-
+  try {
+    debugger;
+    const response = await fetch("http://localhost:3007/riddles");
+    if (!response.ok) {
+      console.log("failed to fetch riddles:", response.status);
+      return;
     }
 
-    
+    const riddlesData = await response.json();
+
+    const nameInput = readline.question("What is your name? ");
+
+    const allPlayers = await getAllPlayers();
+    let existingPlayer = allPlayers.find(player => player.username && player.username.toLowerCase() === nameInput.toLowerCase());
+
+    if (!existingPlayer) {
+      existingPlayer = await addPlayer({ username: nameInput });
+      console.log(`Welcome ${nameInput}, you are now registered!`);
+    }
+
+    if (!existingPlayer || !existingPlayer.id) {
+      console.error("Missing player ID after creation!");
+      return;
+    }
+
+    const playerName = existingPlayer.username || nameInput;  // תקן את השם
+    const p = new Player(playerName);
+
+    if (existingPlayer.best_time != null) {
+      console.log(`Hi ${playerName}, Your previous best time was ${existingPlayer.best_time} seconds`);
+    } else {
+      console.log(`Hi ${playerName}, no previous record found`);
+    }
+
+    const riddles = riddlesData.map(r =>
+      r.choices ? new MultipleChoiceRiddle(r) : new Riddle(r)
+    );
+
+    for (const riddle of riddles) {
+      const start = Date.now();
+      riddle.ask();
+      const end = Date.now();
+      p.recordTime(start, end);
+    }
+
+    const totalTime = p.getTotalTime();
+    p.showStats();
+
+    const playerId = existingPlayer.id;
+
+    const updateRes = await updatePlayerTime(playerId, totalTime);
+
+    if (updateRes.msg === "New record!") {
+      console.log("New record! Time updated.");
+    } else {
+      console.log("No improvement in time.");
+    }
+  } catch (error) {
+    console.log("Error in playGame:", error);
+  }
 }
+
+
 
 
 
@@ -98,7 +107,7 @@ export async function readRiddles() {
 
 
 export async function updateRiddlePrompt() {
-    const id = readline.questionInt("ID to update: ");
+    const id = readline.question("ID to update: ");
     const name = readline.question("New name: ");
     const taskDescription = readline.question("New question: ");
     const correctAnswer = readline.question("New answer: ");
@@ -118,7 +127,7 @@ export async function updateRiddlePrompt() {
 
 
 export async function deleteRiddlePrompt() {
-    const id = readline.questionInt("ID to delete: ");
+    const id = readline.question("ID to delete: ");
     await deleteRiddle(id);
     console.log(" Riddle deleted!");
 
@@ -133,7 +142,7 @@ export async function deleteRiddlePrompt() {
 export async function showLeaderboard() {
   const players = await getAllPlayers();
   const sorted = players
-    .filter(p => p.lowestTime)
+    .filter(p => typeof p.lowestTime === 'number')
     .sort((a, b) => a.lowestTime - b.lowestTime);
 
   console.log("\n Leaderboard:");
