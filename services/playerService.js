@@ -142,11 +142,11 @@ export async function deleteRiddlePrompt() {
 export async function showLeaderboard() {
   const players = await getAllPlayers();
   const sorted = players
-    .filter(p => typeof p.lowestTime === 'number')
-    .sort((a, b) => a.lowestTime - b.lowestTime);
+    .filter(p => typeof p.best_time === 'number')
+    .sort((a, b) => a.best_time - b.best_time);
 
   console.log("\n Leaderboard:");
   sorted.forEach((p, i) => {
-    console.log(`${i + 1}. ${p.name} - ${p.lowestTime} seconds`);
+    console.log(`${i + 1}. ${p.username} - ${p.best_time} seconds`);
   });
 }
